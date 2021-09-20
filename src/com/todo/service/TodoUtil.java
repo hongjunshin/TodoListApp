@@ -1,5 +1,7 @@
 package com.todo.service;
 
+import java.io.Writer;
+import java.io.*;
 import java.util.*;
 
 import com.todo.dao.TodoItem;
@@ -12,36 +14,42 @@ public class TodoUtil {
 		String title, desc;
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.println("\n"
-				+ "========== Create item Section\n"
-				+ "enter the title\n");
+		System.out.print(
+				 "========== 항목 추가\n"
+				+ "제목을 입력하시오 : ");
 		
 		title = sc.next();
 		if (list.isDuplicate(title)) {
-			System.out.printf("title can't be duplicate");
+			System.out.println("이미 같은 제목이 있습니다");
 			return;
 		}
-		
-		System.out.println("enter the description");
-		desc = sc.next();
+		sc.nextLine();
+		System.out.print("내용을 입력하시오 : "); 
+		desc = sc.nextLine().trim();
 		
 		TodoItem t = new TodoItem(title, desc);
 		list.addItem(t);
+		System.out.println("추가되었습니다."); 
 	}
 
 	public static void deleteItem(TodoList l) {
 		
 		Scanner sc = new Scanner(System.in);
+		
+		
+		System.out.print(
+				"========== 항목 제거\n"
+				+ "제거할 항목의 제목을 쓰시오 : "
+				);
 		String title = sc.next();
-		
-		System.out.println("\n"
-				+ "========== Delete Item Section\n"
-				+ "enter the title of item to remove\n"
-				+ "\n");
-		
+		if (!(l.isDuplicate(title))) {
+			System.out.println("항목 중에 "+ title + "이 없습니다");
+			return;
+		}
 		for (TodoItem item : l.getList()) {
 			if (title.equals(item.getTitle())) {
 				l.deleteItem(item);
+				System.out.println("삭제되었습니다."); 
 				break;
 			}
 		}
@@ -52,39 +60,86 @@ public class TodoUtil {
 		
 		Scanner sc = new Scanner(System.in);
 		
-		System.out.println("\n"
-				+ "========== Edit Item Section\n"
-				+ "enter the title of the item you want to update\n"
-				+ "\n");
+		System.out.print(
+				"========== 항목 수정\n"
+				+ "수정할 항목의 제목을 입력하시오 : ");
 		String title = sc.next().trim();
 		if (!l.isDuplicate(title)) {
-			System.out.println("title doesn't exist");
+			System.out.println("항목 중에 "+ title + "이 없습니다");
 			return;
 		}
 
-		System.out.println("enter the new title of the item");
+		System.out.print("새로운 제목 : ");
 		String new_title = sc.next().trim();
 		if (l.isDuplicate(new_title)) {
-			System.out.println("title can't be duplicate");
+			System.out.println("같은 제목을 가진 항목이 있습니다");
 			return;
 		}
-		
-		System.out.println("enter the new description ");
-		String new_description = sc.next().trim();
+		sc.nextLine();
+		System.out.print("새로운 내용 : ");
+		String new_description = sc.nextLine().trim();
 		for (TodoItem item : l.getList()) {
 			if (item.getTitle().equals(title)) {
 				l.deleteItem(item);
 				TodoItem t = new TodoItem(new_title, new_description);
 				l.addItem(t);
-				System.out.println("item updated");
+				System.out.println("항목이 수정되었습니다.");
 			}
 		}
 
 	}
 
 	public static void listAll(TodoList l) {
+		System.out.println("[전체 목록]");
 		for (TodoItem item : l.getList()) {
-			System.out.println("Item Title: " + item.getTitle() + "  Item Description:  " + item.getDesc());
+			System.out.println(item.toString());
 		}
+	}
+	
+	public static void saveList(TodoList l, String filename) {
+		try {
+			Writer w = new FileWriter(filename);
+			
+			for (TodoItem item : l.getList()) {
+				w.write(item.toSaveString());
+			}
+			w.close();
+			System.out.println("항목 정보를 "+filename+"에 저장했습니다!");
+			
+		}
+		catch (FileNotFoundException e){
+			System.out.println("파일을 찾을 수 없습니다");
+		}
+		catch (IOException e){
+			System.out.println("파일 오류 발생!!");
+		}
+	}
+		
+	
+	
+	public static void loadList(TodoList l, String filename) {
+		try {
+		BufferedReader br = new BufferedReader (new FileReader(filename));
+		
+		String oneLine;
+		while((oneLine = br.readLine())!=null) {
+			StringTokenizer st = new StringTokenizer(oneLine,"##");
+			String title = st.nextToken();
+			String desc = st.nextToken();
+			String current_date = st.nextToken();
+			
+			TodoItem t = new TodoItem(title, desc, current_date);
+			l.addItem(t);
+		}
+		br.close();
+		System.out.println("항목 정보를 로딩했습니다.");
+		}
+		catch (FileNotFoundException e){
+			System.out.println("파일이 없습니다.");
+		}
+		catch (IOException e){
+			System.out.println("파일 오류 발생!!");
+		}
+	
 	}
 }
