@@ -11,6 +11,10 @@ public class TodoList {
 		this.list = new ArrayList<TodoItem>();
 	}
 
+	public int size() {
+		return list.size();
+	}
+
 	public void addItem(TodoItem t) {
 		list.add(t);
 	}
@@ -44,6 +48,10 @@ public class TodoList {
 
 	public int indexOf(TodoItem t) {
 		return list.indexOf(t);
+	}
+
+	public TodoItem get(int index) {
+		return list.get(index);
 	}
 
 	public Boolean isDuplicate(String title) {
