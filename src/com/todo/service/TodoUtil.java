@@ -143,7 +143,6 @@ public class TodoUtil {
 	}
 	
 	public static void listCate(TodoList l) {
-		int number = 0;
 		HashSet<String> cateset = new HashSet<String>();
 		for (TodoItem item : l.getList()) {
 			cateset.add(item.getCategory());
@@ -151,9 +150,8 @@ public class TodoUtil {
 		for(Object obj : cateset.toArray()) {
 			String category = (String) obj;
 			System.out.print(category+"   ");
-			number++;
 		}
-		System.out.println("\n총 "+number+"개의 카테고리가 등록되어 있습니다.");
+		System.out.println("\n총 "+cateset.size()+"개의 카테고리가 등록되어 있습니다.");
 	}
 	
 	
