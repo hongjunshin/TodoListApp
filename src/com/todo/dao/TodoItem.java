@@ -78,6 +78,7 @@ public class TodoItem {
  			check= "[V]";
  		}
  		return check;
+
  	}
 	@Override
 	public String toString() {
