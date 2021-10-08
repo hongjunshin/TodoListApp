@@ -5,6 +5,7 @@ import java.util.Scanner;
 import com.todo.dao.TodoList;
 import com.todo.menu.Menu;
 import com.todo.service.TodoUtil;
+import com.todo.service.DbConnect;
 
 public class TodoMain {
 	
@@ -12,13 +13,10 @@ public class TodoMain {
 	
 		Scanner sc = new Scanner(System.in);
 		TodoList l = new TodoList();
-		boolean isList = false;
 		boolean quit = false;
-		TodoUtil.loadList(l, "todolist.txt");
 		Menu.displaymenu();
 		do {
 			Menu.prompt();
-			isList = false;
 			String choice = sc.next();
 			switch (choice) {
 
@@ -35,12 +33,12 @@ public class TodoMain {
 				break;
 			
 			case "find":
-				String word = sc.next();
-				TodoUtil.find(l, word);
+				String word = sc.nextLine().trim();
+				TodoUtil.findList(l, word);
 				break;
 				
 			case "find_cate":
-				String cateword = sc.next();
+				String cateword = sc.nextLine().trim();
 				TodoUtil.find_cate(l, cateword);
 				break;
 				
@@ -48,34 +46,39 @@ public class TodoMain {
 				TodoUtil.listAll(l);
 				break;
 
-			case "ls_name_asc":
-				l.sortByName();
+			case "ls_name":
 				System.out.println("제목순으로 정렬 : ");
-				isList = true;
+				TodoUtil.listAll(l,"title",1);
 				break;
 
 			case "ls_name_desc":
-				l.sortByName();
-				l.reverseList();
 				System.out.println("제목역순으로 정렬 : ");
-				isList = true;
+				TodoUtil.listAll(l,"title",0);
 				break;
 				 
 			case "ls_date":
-				l.sortByDate();
 				System.out.println("날짜순으로 정렬 : ");
-				isList = true;
+				TodoUtil.listAll(l,"due_date",1);
 				break;
 				
 			case "ls_date_desc":
-				l.sortByDate();
-				l.reverseList();
+
 				System.out.println("날짜역순으로 정렬 : ");
-				isList = true;
+				TodoUtil.listAll(l,"due_date",0);
 				break;
 				
 			case "ls_cate":
 				TodoUtil.listCate(l);
+				break;
+			
+			case "ls_comp":
+				System.out.println("완료된 항목 정렬 : ");
+				TodoUtil.listAll(l,1);
+				break;
+				
+			case "comp":
+				int number = sc.nextInt();
+				TodoUtil.completeItem(l,number);
 				break;
 				
 			case "help" :
@@ -91,8 +94,7 @@ public class TodoMain {
 				break;
 			}
 			
-			if(isList) TodoUtil.listAll(l);
 		} while (!quit);
-		TodoUtil.saveList(l, "todolist.txt");
+		DbConnect.closeConnection();
 	}
 }
